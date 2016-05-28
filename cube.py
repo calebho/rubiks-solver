@@ -38,9 +38,37 @@ class Cube(object):
                       'up': np.chararray((3,3)),
                       'down': np.chararray((3,3))}
 
+        faces = ['front','back','right','left','up','down'] # ensure order of faces
         colors = ['b','g','r','o','y','w'] # each pair are opposite faces
-        for face, color in zip(self._state.keys(), colors):
+        for face, color in zip(faces, colors):
             self._state[face][:] = color
+
+    def __str__(self):
+        """2D representation of cube
+        """
+        to_ret = '\n'
+        # upper face
+        for row in range(3):
+            to_ret += ' ' * 6
+            for col in range(3):
+                to_ret += self._state['up'][row, col] + ' '
+            to_ret += '\n'
+
+        # left, front, right, back faces
+        for row in range(3):
+            for face in ['left','front','right','back']:
+                for col in range(3):
+                    to_ret += self._state[face][row, col] + ' '
+            to_ret += '\n'
+
+        # lower face
+        for row in range(3):
+            to_ret += ' ' * 6
+            for col in range(3):
+                to_ret += self._state['down'][row, col] + ' '
+            to_ret += '\n'
+
+        return to_ret
 
     @property
     def state(self):
@@ -85,3 +113,7 @@ class Cube(object):
         """
         if not self._selected:
             raise RuntimeError("No face selected")
+
+if __name__ == "__main__":
+    c = Cube()
+    print c
