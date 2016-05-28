@@ -4,6 +4,8 @@ Rubiks cube class
 
 import numpy as np
 
+from copy import copy
+
 def swap(d, key1, key2):
     """Given a dictionary `d`, swap the values at keys `key1` and `key2`
     """
@@ -90,30 +92,105 @@ class Cube(object):
 
         return True
 
-    def select(self, face):
-        """Selects a face for rotation
+    def rotate(self, face, dir_):
+        """Rotates face `face` in `dir_` direction
+        """
+        if dir_ == 'r': # clockwise
+            k = 3
+        else:
+            k = 1
+
+        self._select(face)
+        self._state[face] = np.rot90(self._state[face], k) # rotates counterclockwise
+        self._shift_sides(face, dir_)
+        self._deselect(face)
+
+        return self
+
+    def _select(self, face):
+        """Selects a face for rotation by orienting adjacent faces properly
         """
         if face == 'front':
-            return
+            pass
         elif face == 'back':
-            swap(self._state, 'front', 'back')
-            swap(self._state, 'left', 'right')
+            self._state['up'] = np.rot90(self._state['up'], 2) # rotate 180
+            self._state['down'] = np.rot90(self._state['down'], 2)
         elif face == 'right':
-            shift(self._state, ['left','front','right','back'], 'l')
+            self._state['up'] = np.rot90(self._state['up'], 3) # counterclockwise 90
+            self._state['down'] = np.rot90(self._state['down'], 1) # clockwise 90
         elif face == 'left':
-            shift(self._state, ['left','front','right','back'], 'r')
+            self._state['up'] = np.rot90(self._state['up'], 1)
+            self._state['down'] = np.rot90(self._state['down'], 3)
         elif face == 'up':
-            shift(self._state, ['down','front','up','back'], 'l')
-        elif face == 'back':
-            shift(self._state, ['down','front','up','back'], 'r')
+            self._state['right'] = np.rot90(self._state['right'], 1)
+            self._state['left'] = np.rot90(self._state['left'], 3)
+            self._state['back'] = np.rot90(self._state['back'], 2)
+        elif face == 'down':
+            self._state['right'] = np.rot90(self._state['right'], 3)
+            self._state['left'] = np.rot90(self._state['left'], 1)
+            self._state['back'] = np.rot90(self._state['back'], 2)
 
-
-    def rotate(self, dir_):
-        """Rotates front face in `dir_` direction
+    def _deselect(self, face):
+        """Returns faces to original orientation
         """
-        if not self._selected:
-            raise RuntimeError("No face selected")
+        if face == 'front':
+            pass
+        elif face == 'back':
+            self._state['up'] = np.rot90(self._state['up'], 2)
+            self._state['down'] = np.rot90(self._state['down'], 2)
+        elif face == 'right':
+            self._state['up'] = np.rot90(self._state['up'], 1)
+            self._state['down'] = np.rot90(self._state['down'], 3)
+        elif face == 'left':
+            self._state['up'] = np.rot90(self._state['up'], 3)
+            self._state['down'] = np.rot90(self._state['down'], 1)
+        elif face == 'up':
+            self._state['right'] = np.rot90(self._state['right'], 3)
+            self._state['left'] = np.rot90(self._state['left'], 1)
+            self._state['back'] = np.rot90(self._state['back'], 2)
+        elif face == 'down':
+            self._state['right'] = np.rot90(self._state['right'], 1)
+            self._state['left'] = np.rot90(self._state['left'], 3)
+            self._state['back'] = np.rot90(self._state['back'], 2)
+
+    def _shift_sides(self, face, dir_):
+        """Moves the pieces of the adjacent sides when rotating
+        """
+        if face == 'front':
+            faces = ['up','right','down','left']
+        elif face == 'back':
+            faces = ['up','left','down','right']
+        elif face == 'right':
+            faces = ['up','back','down','front']
+        elif face == 'left':
+            faces = ['up','front','down','back']
+        elif face == 'up':
+            faces = ['back','right','front','left']
+        else:
+            faces = ['front','right','back','left']
+
+        if dir_ == 'l':
+            faces.reverse()
+
+        bot_row = copy(self._state[faces[0]][2, :])
+        # bot_row = np.transpose(bot_row)[::-1, :]
+        left_col = copy(self._state[faces[1]][:, 0])
+        # left_col = np.transpose(left_col)[:, ::-1]
+        top_row = copy(self._state[faces[2]][0, :])
+        # top_row = np.transpose(top_row)[::-1, :]
+        right_col = copy(self._state[faces[3]][:, 2])
+        # right_col = np.transpose(right_col)[:, ::-1]
+
+        self._state[faces[0]][2, :] = right_col
+        self._state[faces[1]][:, 0] = bot_row
+        self._state[faces[2]][0, :] = left_col
+        self._state[faces[3]][:, 2] = top_row
+
 
 if __name__ == "__main__":
     c = Cube()
+    print c
+    # c.rotate('front', 'r')
+    # print c
+    c.rotate('front', 'l')
     print c
