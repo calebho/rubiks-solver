@@ -7,31 +7,6 @@ import numpy as np
 from random import choice
 from copy import copy
 
-def swap(d, key1, key2):
-    """Given a dictionary `d`, swap the values at keys `key1` and `key2`
-    """
-    d[key1], d[key2] = d[key2], d[key1]
-
-def shift(d, keys, dir_):
-    """Given a dictionary `d`, a sequence of keys `keys`, and a direction `dir`
-    move the values in `d` corresponding to `keys` one space over in the
-    direction `dir`
-
-    i.e.:
-    d = {'a':1, 'b':2, 'c':3}
-    right_shift(d) -> {'a':3, 'b':1, 'c':2}
-    """
-    if dir_ == 'r':
-        last = d[keys[-1]]
-        for i in range(0, len(keys) - 1):
-            d[keys[i + 1]] = d[keys[i]]
-        d[keys[0]] = last
-    else:
-        first = d[keys[0]]
-        for i in range(len(keys) - 1, 0, -1):
-            d[keys[i - 1]] = d[keys[i]]
-        d[keys[-1]] = first
-
 class Cube(object):
     def __init__(self):
         self._state = {'front': np.chararray((3,3)),
