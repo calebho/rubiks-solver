@@ -4,6 +4,7 @@ Rubiks cube class
 
 import numpy as np
 
+from random import choice
 from copy import copy
 
 def swap(d, key1, key2):
@@ -169,28 +170,28 @@ class Cube(object):
         else:
             faces = ['front','right','back','left']
 
-        if dir_ == 'l':
-            faces.reverse()
-
         bot_row = copy(self._state[faces[0]][2, :])
-        # bot_row = np.transpose(bot_row)[::-1, :]
         left_col = copy(self._state[faces[1]][:, 0])
-        # left_col = np.transpose(left_col)[:, ::-1]
         top_row = copy(self._state[faces[2]][0, :])
-        # top_row = np.transpose(top_row)[::-1, :]
         right_col = copy(self._state[faces[3]][:, 2])
-        # right_col = np.transpose(right_col)[:, ::-1]
 
-        self._state[faces[0]][2, :] = right_col
-        self._state[faces[1]][:, 0] = bot_row
-        self._state[faces[2]][0, :] = left_col
-        self._state[faces[3]][:, 2] = top_row
-
+        if dir_ == 'r':
+            self._state[faces[0]][2, :] = right_col
+            self._state[faces[1]][:, 0] = bot_row
+            self._state[faces[2]][0, :] = left_col
+            self._state[faces[3]][:, 2] = top_row
+        else:
+            self._state[faces[0]][2, :] = left_col
+            self._state[faces[1]][:, 0] = top_row
+            self._state[faces[2]][0, :] = right_col
+            self._state[faces[3]][:, 2] = bot_row
 
 if __name__ == "__main__":
     c = Cube()
     print c
-    # c.rotate('front', 'r')
-    # print c
-    c.rotate('front', 'l')
+    print c.is_solved()
+    c.rotate('back', 'l').rotate('back', 'r')
     print c
+    print c.is_solved()
+    # c.rotate('front', 'l')
+    # print c
