@@ -56,8 +56,13 @@ class Cube(object):
     def state(self, s):
         self._state = s
 
-    def shuffle(self):
-        pass
+    def shuffle(self, n=50):
+        faces = self._state.keys()
+        directions = ['r', 'l']
+        for i in range(n):
+            face = choice(faces)
+            direction = choice(directions)
+            self.rotate(face, direction)
 
     def is_solved(self):
         for face in self._state:
@@ -170,3 +175,6 @@ if __name__ == "__main__":
     print c.is_solved()
     # c.rotate('front', 'l')
     # print c
+    c.shuffle()
+    print c
+    print c.is_solved()
